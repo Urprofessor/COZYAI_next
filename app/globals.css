@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font loader — Denton is packaged locally; Aeonik Soft Pro is not shipped, so
+   it falls back to SF Pro / system-ui through the Tailwind `font-aeonik` alias. */
+@font-face {
+  font-family: 'Denton';
+  src: url('/fonts/Denton-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  color: #1A1A1A;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background: #FFFBFB;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Reset that matches the vanilla project's global reset */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Utility for the tier-3 typography token (used by system messages, hints, etc) */
+@layer components {
+  .cozy-tier-3 {
+    @apply text-[12px] leading-[1.4] tracking-[0.01em] text-center text-text-muted font-normal;
+  }
+}
