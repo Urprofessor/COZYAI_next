@@ -16,17 +16,25 @@ const ICON_SRC: Record<string, string> = {
 };
 
 /**
- * Expandable list of tips. One item open at a time (accordion behavior).
- * The vanilla version allowed multiple open — swap the state shape to Set<number>
- * if you'd rather match that.
+ * Expandable list of tips. Multiple items may be open at once, matching the
+ * vanilla project's behavior. Toggle a single item by clicking its head.
  */
 export function TipAccordion({ tips }: Props) {
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [openSet, setOpenSet] = useState<Set<number>>(() => new Set());
+
+  function toggle(i: number) {
+    setOpenSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  }
 
   return (
     <div className="flex flex-col gap-2 w-full">
       {tips.map((tip, i) => {
-        const open = openIdx === i;
+        const open = openSet.has(i);
         return (
           <div
             key={i}
@@ -34,7 +42,7 @@ export function TipAccordion({ tips }: Props) {
           >
             <button
               type="button"
-              onClick={() => setOpenIdx(open ? null : i)}
+              onClick={() => toggle(i)}
               className="w-full flex items-center gap-3 px-4 py-3.5 text-left bg-transparent border-0 cursor-pointer"
             >
               <img

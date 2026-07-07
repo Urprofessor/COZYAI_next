@@ -29,14 +29,22 @@ vanilla `AI-Setup2.0_Deepseek` project. Same functionality, saner architecture.
   - Fixed Back / Next footer
 - **Tips flow** — `/tips` + `/tips/1` through `/tips/7`
   - Tips index: 7 topic cards + bottom-anchored floating CozyAI pill (with fade mask)
-  - Tips detail: same layout as Setup but back → /tips, no Next button
+  - Tips detail: same layout as Setup but back → /tips
+- **Fullscreen video player** (`FullscreenVideoPlayer.tsx`)
+  - Portrait phones rotate 90° to simulate landscape; native landscape stays put
+  - Portal-mounted overlay so it escapes the layout
+  - Step pill top-left, collapse top-right
+  - Center play/pause overlay when paused
+  - Prev / Next step buttons mid-right (Setup goes to /setup/N±1, Tips goes to /tips/N±1)
+  - Progress bar with click + drag seek (via `useDragSlider` hook)
+  - Bottom row: play/pause, +10s forward, mute, draggable volume slider, current/total time
+  - Sync: inline player pauses on expand, resumes at fullscreen exit time
+- **Multi-open tip accordion** — multiple tips can be expanded simultaneously
 
 **TODO (deferred until you need them)**
 - Welcome / Complete / Control / Settings pages (marketing + device pairing UI)
-- Full-screen video player mode with scrubber and controls (vanilla project had this — kept simple here)
 - History pagination + "swipe up to view history" hint pill on CozyAI Welcome
 - Tier-3 typography usage for date dividers between old messages
-- Multi-open accordion (currently single-open) if you prefer that UX
 - Handoff card centering polish (currently uses simple flex)
 
 ## Prerequisites
@@ -136,11 +144,17 @@ components/step/
 ├── CozyEntryPill.tsx       Glass-effect 96×44 entry button
 ├── FloatingCozyBtn.tsx     Bottom-anchored pill (Tips index)
 ├── ProgressBar.tsx         7-segment clickable progress
-├── VideoPlayer.tsx         Inline video with tap-to-toggle
+├── VideoPlayer.tsx         Inline video with tap-to-toggle + expand button
+├── FullscreenVideoPlayer.tsx  Landscape-rotated overlay with full controls
 ├── StepPage.tsx            Setup step assembled component
-├── TipAccordion.tsx        Expandable list of tips
+├── TipAccordion.tsx        Multi-open expandable list of tips
 ├── TipCarousel.tsx         Swipe carousel for step sequences
 └── TipMedia.tsx            Image + text body renderer (used by accordion)
+
+hooks/
+├── useCozyChat.ts          Central chat state + streaming + handoff flow
+├── useDeviceId.ts          Stable localStorage id for history keying
+└── useDragSlider.ts        Pointer/touch drag → 0..1 fraction (video seekbar & volume)
 
 components/tips/
 ├── TipsIndex.tsx           7 topic cards + bottom floating button

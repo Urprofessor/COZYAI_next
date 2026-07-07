@@ -1,11 +1,13 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { STEPS } from '@/lib/steps/data';
 import { MOMS_AGREE_PCT, getStepVideoSrc } from '@/lib/steps/video';
 import { StepHeader } from './StepHeader';
 import { ProgressBar } from './ProgressBar';
-import { VideoPlayer } from './VideoPlayer';
+import { VideoPlayer, type VideoPlayerHandle } from './VideoPlayer';
+import { FullscreenVideoPlayer } from './FullscreenVideoPlayer';
 import { TipAccordion } from './TipAccordion';
 
 interface Props {
@@ -13,9 +15,10 @@ interface Props {
 }
 
 /**
- * One step of the 7-step Setup flow. Same layout as vanilla:
- * header → progress bar + step title → video → moms-agree badge → tip
- * accordion → Back / Next footer.
+ * One step of the 7-step Setup flow. Header → progress → title → video →
+ * moms-agree badge → tip accordion → Back/Next footer. Tapping the video's
+ * expand icon opens the FullscreenVideoPlayer overlay with prev/next step
+ * navigation.
  */
 export function StepPage({ stepNumber }: Props) {
   const router = useRouter();
@@ -24,13 +27,28 @@ export function StepPage({ stepNumber }: Props) {
   const isFirst = step.num === 1;
   const isLast = step.num === 7;
 
+  const videoRef = useRef<VideoPlayerHandle>(null);
+  const [fsOpen, setFsOpen] = useState(false);
+  const [fsInitialTime, setFsInitialTime] = useState(0);
+
   function next() {
-    if (isLast) router.push('/'); // Placeholder: go to complete/home
+    if (isLast) router.push('/');
     else router.push(`/setup/${step.num + 1}`);
   }
   function back() {
     if (isFirst) router.push('/');
     else router.push(`/setup/${step.num - 1}`);
+  }
+
+  function openFullscreen(t: number) {
+    setFsInitialTime(t);
+    setFsOpen(true);
+    videoRef.current?.pause();
+  }
+  function closeFullscreen(endedAt: number) {
+    setFsOpen(false);
+    videoRef.current?.seek(endedAt);
+    videoRef.current?.play();
   }
 
   return (
@@ -54,8 +72,10 @@ export function StepPage({ stepNumber }: Props) {
 
       <div className="flex-1 overflow-y-auto px-6 pb-32">
         <VideoPlayer
+          ref={videoRef}
           src={getStepVideoSrc(step.num)}
           labelTitle={step.videoTitle}
+          onExpand={openFullscreen}
         />
 
         {/* Moms agree badge */}
@@ -77,6 +97,27 @@ export function StepPage({ stepNumber }: Props) {
         onBack={back}
         onNext={next}
       />
+
+      {fsOpen && (
+        <FullscreenVideoPlayer
+          src={getStepVideoSrc(step.num)}
+          stepNum={step.num}
+          stepLabel={`Step ${step.num}`}
+          initialTime={fsInitialTime}
+          hasPrev={!isFirst}
+          hasNext={true}
+          nextLabel={isLast ? 'Finish' : 'Next Step'}
+          onClose={closeFullscreen}
+          onPrev={() => {
+            setFsOpen(false);
+            back();
+          }}
+          onNext={() => {
+            setFsOpen(false);
+            next();
+          }}
+        />
+      )}
     </div>
   );
 }

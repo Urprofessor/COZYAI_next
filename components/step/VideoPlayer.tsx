@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -8,20 +8,49 @@ interface Props {
   labelTitle: string;
   duration?: string; // display-only, e.g. "15s"
   autoPlay?: boolean;
+  /** Fired when the top-right expand icon is tapped. Parent should open the
+   *  fullscreen player and pass the current playback time. */
+  onExpand?: (currentTime: number) => void;
+}
+
+export interface VideoPlayerHandle {
+  seek(seconds: number): void;
+  play(): void;
+  pause(): void;
+  getCurrentTime(): number;
 }
 
 /**
- * Inline video player: tap to play/pause. Simpler than the vanilla version
- * (which had a full-screen mode with scrubber). Fullscreen can be re-added
- * later; for now a bordered rounded frame is enough.
+ * Inline video player: tap-to-toggle + optional expand button.
+ * Exposes an imperative handle so the parent can resume playback at a specific
+ * time after the fullscreen player closes.
  */
-export function VideoPlayer({ src, labelTitle, duration = '15s', autoPlay = true }: Props) {
-  const ref = useRef<HTMLVideoElement>(null);
+export const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(function VideoPlayer(
+  { src, labelTitle, duration = '15s', autoPlay = true, onExpand },
+  ref
+) {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      seek(seconds) {
+        const v = videoRef.current;
+        if (v) {
+          try { v.currentTime = seconds; } catch { /* ignore */ }
+        }
+      },
+      play() { videoRef.current?.play().catch(() => {}); },
+      pause() { videoRef.current?.pause(); },
+      getCurrentTime() { return videoRef.current?.currentTime ?? 0; },
+    }),
+    []
+  );
+
   useEffect(() => {
-    const v = ref.current;
+    const v = videoRef.current;
     if (!v) return;
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
@@ -38,7 +67,7 @@ export function VideoPlayer({ src, labelTitle, duration = '15s', autoPlay = true
   }, [src]);
 
   function toggle() {
-    const v = ref.current;
+    const v = videoRef.current;
     if (!v) return;
     if (v.paused) v.play().catch(() => {});
     else v.pause();
@@ -48,7 +77,7 @@ export function VideoPlayer({ src, labelTitle, duration = '15s', autoPlay = true
     <div className="relative w-full aspect-video bg-black/5 rounded-2xl overflow-hidden">
       {src ? (
         <video
-          ref={ref}
+          ref={videoRef}
           src={src}
           playsInline
           muted
@@ -62,6 +91,23 @@ export function VideoPlayer({ src, labelTitle, duration = '15s', autoPlay = true
         <div className="w-full h-full flex items-center justify-center text-text-muted text-sm">
           Video unavailable
         </div>
+      )}
+
+      {/* Expand button (top-right) */}
+      {onExpand && src && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onExpand(videoRef.current?.currentTime ?? 0);
+          }}
+          aria-label="Fullscreen"
+          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6" />
+          </svg>
+        </button>
       )}
 
       {/* Play button overlay when paused */}
@@ -101,4 +147,4 @@ export function VideoPlayer({ src, labelTitle, duration = '15s', autoPlay = true
       </div>
     </div>
   );
-}
+});
