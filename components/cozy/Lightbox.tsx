@@ -77,10 +77,12 @@ export function Lightbox({ src, images, initialIndex = 0, onClose }: Props) {
         </div>
       )}
 
-      {/* Swipe track */}
+      {/* Swipe track — track itself does NOT stopPropagation, so taps in the
+          black margins around the image fall through to the backdrop and close.
+          Only the <img> element blocks propagation, letting pinch-zoom happen
+          without dismissing the viewer. */}
       <div
         ref={trackRef}
-        onClick={(e) => e.stopPropagation()}
         className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth"
         style={{
           scrollbarWidth: 'none',
@@ -96,6 +98,7 @@ export function Lightbox({ src, images, initialIndex = 0, onClose }: Props) {
               src={url}
               alt=""
               draggable={false}
+              onClick={(e) => e.stopPropagation()}
               className="max-w-full max-h-full object-contain select-none cursor-default"
             />
           </div>
