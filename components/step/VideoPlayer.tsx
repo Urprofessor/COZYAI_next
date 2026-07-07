@@ -1,15 +1,12 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { cn } from '@/lib/utils';
 
 interface Props {
   src: string | null;
   labelTitle: string;
   duration?: string; // display-only, e.g. "15s"
   autoPlay?: boolean;
-  /** Fired when the top-right expand icon is tapped. Parent should open the
-   *  fullscreen player and pass the current playback time. */
   onExpand?: (currentTime: number) => void;
 }
 
@@ -21,9 +18,9 @@ export interface VideoPlayerHandle {
 }
 
 /**
- * Inline video player: tap-to-toggle + optional expand button.
- * Exposes an imperative handle so the parent can resume playback at a specific
- * time after the fullscreen player closes.
+ * Inline video — matches vanilla `.step-video`. Full-width, aspect-ratio
+ * 393/267, NO rounded corners, dimming overlay when paused, corner expand
+ * button, bottom-left "How-to video · 15s" pill, thin bottom progress line.
  */
 export const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(function VideoPlayer(
   { src, labelTitle, duration = '15s', autoPlay = true, onExpand },
@@ -74,7 +71,14 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(function VideoPl
   }
 
   return (
-    <div className="relative w-full aspect-video bg-black/5 rounded-2xl overflow-hidden">
+    <div
+      className="relative w-full overflow-hidden bg-black cursor-pointer"
+      style={{ aspectRatio: '393 / 267' }}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        toggle();
+      }}
+    >
       {src ? (
         <video
           ref={videoRef}
@@ -84,16 +88,48 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(function VideoPl
           loop
           preload="auto"
           autoPlay={autoPlay}
-          onClick={toggle}
-          className="w-full h-full object-cover cursor-pointer bg-black"
+          className="w-full h-full object-contain block"
+          style={{
+            background:
+              'linear-gradient(135deg, #E8C5C9 0%, #D9A8AE 100%)',
+          }}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center text-text-muted text-sm">
+        <div className="w-full h-full flex items-center justify-center text-white/60 text-sm">
           Video unavailable
         </div>
       )}
 
-      {/* Expand button (top-right) */}
+      {/* 27% dark overlay when paused */}
+      <div
+        className="absolute inset-0 z-[2] pointer-events-none transition-opacity duration-200"
+        style={{ background: 'rgba(0,0,0,0.27)', opacity: playing ? 0 : 1 }}
+      />
+
+      {/* Big center play button when paused (uses pause hero.png like vanilla) */}
+      {src && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); toggle(); }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[3] border-0 bg-transparent p-0 transition-all"
+          style={{
+            width: 102,
+            height: 96,
+            opacity: playing ? 0 : 1,
+            pointerEvents: playing ? 'none' : 'auto',
+          }}
+          aria-label="Play"
+        >
+          <img
+            src="/images/pause%20hero.png"
+            alt=""
+            className="w-full h-full object-contain pointer-events-none select-none"
+            draggable={false}
+          />
+        </button>
+      )}
+
+      {/* Top-right expand button */}
       {onExpand && src && (
         <button
           type="button"
@@ -102,49 +138,24 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(function VideoPl
             onExpand(videoRef.current?.currentTime ?? 0);
           }}
           aria-label="Fullscreen"
-          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center"
+          className="absolute top-2.5 right-2.5 z-[10] w-10 h-10 rounded-full bg-black/35 text-white border-0 flex items-center justify-center cursor-pointer active:bg-black/55"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" pointerEvents="none">
             <path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6" />
           </svg>
         </button>
       )}
 
-      {/* Play button overlay when paused */}
-      {!playing && src && (
-        <button
-          type="button"
-          onClick={toggle}
-          className="absolute inset-0 flex items-center justify-center cursor-pointer"
-          aria-label="Play"
-        >
-          <span className="w-14 h-14 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-md">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
-        </button>
-      )}
-
-      {/* Label + duration */}
-      <div className="absolute left-3 bottom-3 flex items-center gap-2 text-white text-xs bg-black/40 backdrop-blur-md px-2 py-1 rounded-full">
-        <span>{labelTitle}</span>
-        <span aria-hidden>·</span>
-        <span>{duration}</span>
+      {/* Bottom-left label pill */}
+      <div className="absolute bottom-3.5 left-3 z-[2] bg-black/55 text-white text-[11px] font-medium px-3 py-1 rounded-md">
+        {labelTitle} · {duration}
       </div>
 
-      {/* Progress bar (visible while playing) */}
+      {/* Bottom progress line */}
       <div
-        className={cn(
-          'absolute left-0 right-0 bottom-0 h-1 bg-white/20 transition-opacity',
-          playing ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        <div
-          className="h-full bg-white transition-[width] duration-100"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+        className="absolute left-0 bottom-0 h-[3px] z-[2] transition-[width] duration-100"
+        style={{ width: `${progress}%`, background: '#E8909C' }}
+      />
     </div>
   );
 });

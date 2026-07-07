@@ -16,8 +16,9 @@ const ICON_SRC: Record<string, string> = {
 };
 
 /**
- * Expandable list of tips. Multiple items may be open at once, matching the
- * vanilla project's behavior. Toggle a single item by clicking its head.
+ * Matches vanilla `.accordion` — flat list inside one white card, items
+ * separated by hairline dividers, not individual pills. Multiple items may be
+ * open at once. Chevron rotates on open.
  */
 export function TipAccordion({ tips }: Props) {
   const [openSet, setOpenSet] = useState<Set<number>>(() => new Set());
@@ -32,56 +33,54 @@ export function TipAccordion({ tips }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="w-full">
       {tips.map((tip, i) => {
         const open = openSet.has(i);
+        const isLast = i === tips.length - 1;
         return (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-[0_2px_8px_rgba(74,6,18,0.04)] overflow-hidden"
+            className={cn(!isLast && 'border-b border-[#F0E5E7]')}
           >
             <button
               type="button"
               onClick={() => toggle(i)}
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left bg-transparent border-0 cursor-pointer"
+              className="w-full flex items-center justify-between gap-3 py-4 bg-transparent border-0 cursor-pointer text-left"
             >
-              <img
-                src={ICON_SRC[tip.icon] ?? ICON_SRC.question}
-                alt=""
-                draggable={false}
-                className="w-6 h-6 flex-shrink-0"
-              />
-              <span className="flex-1 text-[15px] font-semibold text-text-1">
-                {tip.title}
-              </span>
+              <div className="flex items-center gap-2.5 text-[15px] font-medium text-text-1">
+                <img
+                  src={ICON_SRC[tip.icon] ?? ICON_SRC.question}
+                  alt=""
+                  draggable={false}
+                  className="w-[22px] h-[22px] flex-shrink-0 object-contain select-none"
+                />
+                <span>{tip.title}</span>
+              </div>
               <svg
-                width="16"
-                height="16"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2"
                 className={cn(
-                  'text-brand-rose-500/60 transition-transform flex-shrink-0',
+                  'text-neutral-500 transition-transform duration-300 flex-shrink-0',
                   open && 'rotate-180'
                 )}
               >
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </button>
-            {open && (
-              <div
-                className="px-4 pb-4"
-                onClick={(e) => {
-                  // Image taps inside the body open the lightbox; don't collapse.
-                  if ((e.target as HTMLElement).closest('img[data-lightbox]')) {
-                    e.stopPropagation();
-                  }
-                }}
-              >
-                <TipBody tip={tip} />
-              </div>
-            )}
+
+            {/* Collapsible body — matches vanilla max-height transition */}
+            <div
+              className={cn(
+                'overflow-hidden transition-[max-height,padding] duration-300 ease',
+                open ? 'max-h-[600px] pb-4' : 'max-h-0'
+              )}
+            >
+              <TipBody tip={tip} />
+            </div>
           </div>
         );
       })}

@@ -5,8 +5,9 @@ import { Lightbox } from '@/components/cozy/Lightbox';
 import type { TipImage } from '@/lib/steps/types';
 
 /**
- * Renders the images for a type=image tip (single `image` or multi `images`)
- * plus body text and warning block. Clicking an image opens the shared lightbox.
+ * Renders images + text for a `type: 'image'` tip. Matches vanilla
+ * `.accordion-body-img` (grey background box, rounded 8px, image full width).
+ * Multi-image renders each in its own box stacked, then the body text below.
  */
 export function TipMedia({ tip }: { tip: TipImage }) {
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -14,23 +15,24 @@ export function TipMedia({ tip }: { tip: TipImage }) {
 
   return (
     <>
-      {images.length > 0 && (
-        <div className={images.length > 1 ? 'grid grid-cols-2 gap-2 mb-3' : 'mb-3'}>
-          {images.map((src, i) => (
-            <div key={i} className="w-full bg-neutral-200 rounded-lg overflow-hidden">
-              <img
-                src={src}
-                alt=""
-                draggable={false}
-                onClick={() => setLightbox(src)}
-                className="w-full h-auto block cursor-zoom-in select-none"
-              />
-            </div>
-          ))}
+      {images.map((src, i) => (
+        <div
+          key={i}
+          className="w-full bg-[#EAEAEA] rounded-lg overflow-hidden mb-3"
+        >
+          <img
+            src={src}
+            alt=""
+            draggable={false}
+            onClick={() => setLightbox(src)}
+            className="w-full h-auto block cursor-zoom-in select-none"
+          />
         </div>
-      )}
+      ))}
 
-      <div className="text-[14px] leading-6 text-text-1 whitespace-pre-wrap">
+      <div
+        className="text-[14px] leading-[1.55] text-[#555] whitespace-pre-line"
+      >
         {tip.body}
       </div>
 
@@ -44,7 +46,9 @@ export function TipMedia({ tip }: { tip: TipImage }) {
 export function TipTextBody({ body, warning }: { body: string; warning?: string }) {
   return (
     <>
-      <div className="text-[14px] leading-6 text-text-1 whitespace-pre-wrap">{body}</div>
+      <div className="text-[14px] leading-[1.55] text-[#555] whitespace-pre-line">
+        {body}
+      </div>
       {warning && <TipWarning text={warning} />}
     </>
   );
@@ -52,11 +56,19 @@ export function TipTextBody({ body, warning }: { body: string; warning?: string 
 
 function TipWarning({ text }: { text: string }) {
   return (
-    <div className="flex gap-2 items-start mt-3 p-3 rounded-lg bg-brand-rose-100">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#E24B4A" className="flex-shrink-0 mt-0.5">
-        <path d="M12 2 L1 21h22z" />
-      </svg>
-      <div className="text-[13px] leading-5 text-text-1 whitespace-pre-wrap">{text}</div>
+    <div
+      className="flex items-start gap-2 mt-3 px-3 py-2.5 rounded-lg"
+      style={{ background: 'rgba(232, 121, 138, 0.10)' }}
+    >
+      <img
+        src="/icon/%E6%84%9F%E5%8F%B9%E5%8F%B7icon.png"
+        alt=""
+        className="w-[18px] h-[18px] flex-shrink-0 mt-px object-contain select-none"
+        draggable={false}
+      />
+      <div className="text-[13px] leading-[1.5] text-[#555] whitespace-pre-line flex-1">
+        {text}
+      </div>
     </div>
   );
 }

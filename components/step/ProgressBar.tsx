@@ -9,8 +9,11 @@ interface Props {
 }
 
 /**
- * 7 clickable segments showing progress through the setup. Filled segments
- * indicate completed steps.
+ * Thin horizontal 7-segment progress bar. Matches vanilla `.step-progress-bar`:
+ *   • 3px height, 4px gap, 2px radius
+ *   • Empty = #F5C8CE (pink)
+ *   • Done or Current = #4A0612 (dark red)
+ * Each segment has an invisible ±10px vertical tap target for touch.
  */
 export function ProgressBar({
   currentStep,
@@ -18,26 +21,30 @@ export function ProgressBar({
   hrefFor = (s) => `/setup/${s}`,
 }: Props) {
   return (
-    <div className="flex gap-1.5 items-center h-1.5">
+    <div className="flex" style={{ gap: 4 }}>
       {Array.from({ length: total }, (_, i) => {
         const step = i + 1;
-        const done = step < currentStep;
-        const active = step === currentStep;
+        const filled = step <= currentStep;
         return (
           <Link
             key={step}
             href={hrefFor(step)}
             role="button"
             aria-label={`Go to step ${step}`}
-            className={[
-              'flex-1 h-1.5 rounded-full transition-colors',
-              done
-                ? 'bg-brand-rose-500'
-                : active
-                  ? 'bg-brand-rose-500/50'
-                  : 'bg-brand-rose-500/15',
-            ].join(' ')}
-          />
+            className="flex-1 relative"
+            style={{
+              height: 3,
+              borderRadius: 2,
+              background: filled ? '#4A0612' : '#F5C8CE',
+            }}
+          >
+            {/* Enlarged tap target for touch */}
+            <span
+              aria-hidden
+              className="absolute left-0 right-0"
+              style={{ top: -10, bottom: -10 }}
+            />
+          </Link>
         );
       })}
     </div>
