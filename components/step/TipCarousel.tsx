@@ -82,23 +82,23 @@ export function TipCarousel({ tip }: { tip: TipCarouselType }) {
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Dots overlay */}
-        <div className="absolute left-0 right-0 bottom-2.5 flex justify-center h-[18px] items-center gap-2 z-[2] pointer-events-none">
-          {tip.slides.map((_, i) => (
-            <span
-              key={i}
-              onClick={() => goTo(i)}
-              className="w-2 h-2 rounded-full transition-colors cursor-pointer pointer-events-auto"
-              style={{ background: i === active ? '#4A0612' : '#E0D5D7' }}
-            />
-          ))}
-        </div>
+      {/* Dots sit BELOW the frame (not overlaid on the image) */}
+      <div className="flex justify-center items-center gap-2 mt-2.5 h-[18px]">
+        {tip.slides.map((_, i) => (
+          <span
+            key={i}
+            onClick={() => goTo(i)}
+            className="w-2 h-2 rounded-full transition-colors cursor-pointer"
+            style={{ background: i === active ? '#4A0612' : '#E0D5D7' }}
+          />
+        ))}
       </div>
 
       {/* Caption of active slide */}
       <p
-        className="text-[14px] leading-[1.5] text-[#555] m-0 mt-3 mb-2.5 whitespace-pre-line"
+        className="text-[14px] leading-[1.5] text-[#555] m-0 mt-2 mb-2.5 whitespace-pre-line"
         style={{ minHeight: '1.5em' }}
       >
         {tip.slides[active]?.caption ?? ''}
