@@ -4,11 +4,12 @@ import { useRouter } from 'next/navigation';
 import { BottomNav } from './BottomNav';
 
 /**
- * My Device hub — the first screen a user lands on. Contains a hero card
- * pushing them into the Breast Pump setup flow, plus stub cards for other
- * paired devices (BM04 camera, WN02 sensor) which are visual only.
- *
- * Tapping the pump card's "Get Start" navigates to /welcome.
+ * My Device hub. Layout:
+ *   • Header — "My Device" title + subtle add pill
+ *   • Breast Pump hero card — pink gradient, prompt copy, Get Start pill with
+ *     bunny mascot peeking over the top of the button
+ *   • Secondary device stubs (BM04 camera, WN02 sensor) — visual only
+ *   • Bottom 4-tab nav (Device active)
  */
 export function MyDevicePage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export function MyDevicePage() {
       {/* Top bar */}
       <div
         className="flex items-center justify-between px-5 flex-shrink-0"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 12px)' }}
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)', paddingBottom: 10 }}
       >
         <h1
           className="m-0 font-bold"
@@ -32,8 +33,8 @@ export function MyDevicePage() {
         <button
           type="button"
           aria-label="Add device"
-          className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-0 cursor-pointer active:opacity-70"
-          style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.06)' }}
+          className="w-11 h-11 rounded-full bg-white flex items-center justify-center border-0 cursor-pointer active:opacity-70"
+          style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
         >
           <svg
             width="18"
@@ -49,9 +50,9 @@ export function MyDevicePage() {
         </button>
       </div>
 
-      {/* Content — pump hero + secondary device cards */}
+      {/* Content */}
       <div
-        className="flex-1 flex flex-col gap-4 px-5 pt-5"
+        className="flex-1 flex flex-col gap-3.5 px-5"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 90px)' }}
       >
         <PumpCard onGetStart={() => router.push('/welcome')} />
@@ -65,37 +66,39 @@ export function MyDevicePage() {
 }
 
 /**
- * The featured Breast Pump card — pink gradient, "Tap below for a quick setup
- * guide" prompt, bunny mascot peeking behind the Get Start button.
+ * Featured Breast Pump card. Height is generous so the bunny mascot has room
+ * to peek from behind the Get Start button.
  */
 function PumpCard({ onGetStart }: { onGetStart: () => void }) {
   return (
     <div
-      className="relative overflow-hidden"
+      className="relative"
       style={{
-        borderRadius: 24,
-        padding: '16px 18px 26px',
+        borderRadius: 28,
+        padding: '18px 20px 40px',
+        // Softer pink washed gradient, lighter at top-left → warmer at bottom.
         background:
-          'linear-gradient(155deg, #F8D3DA 0%, #F3B9C6 55%, #EFAEBC 100%)',
+          'linear-gradient(150deg, #FBDCE1 0%, #F5C0CB 45%, #EFAEBC 100%)',
+        boxShadow: '0 2px 12px rgba(240, 175, 190, 0.35)',
+        overflow: 'hidden',
       }}
     >
       {/* Top row: pump icon + label + V3 pill + chevron */}
       <div className="flex items-center gap-2.5">
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(255,255,255,0.5)' }}
+          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: 'rgba(255,255,255,0.55)' }}
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#4A0612"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          >
-            <path d="M8 3h8v6a4 4 0 0 1-4 4 4 4 0 0 1-4-4V3z" />
-            <path d="M12 13v8" />
+          {/* Stylized breast pump silhouette */}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M7.5 4.5c0-.9.7-1.5 1.5-1.5h6c.8 0 1.5.6 1.5 1.5v3.2c0 3-2 5.3-4.5 5.3s-4.5-2.3-4.5-5.3V4.5Z"
+              fill="#EF9DB0"
+              stroke="#B84361"
+              strokeWidth="1.2"
+            />
+            <path d="M12 13v6" stroke="#B84361" strokeWidth="1.5" strokeLinecap="round" />
+            <rect x="9" y="19" width="6" height="2.5" rx="1.2" fill="#B84361" />
           </svg>
         </div>
         <span
@@ -110,7 +113,7 @@ function PumpCard({ onGetStart }: { onGetStart: () => void }) {
             background: '#FFF3B8',
             color: '#4A0612',
             fontSize: 11,
-            padding: '3px 8px',
+            padding: '3px 9px',
             letterSpacing: '0.02em',
           }}
         >
@@ -124,14 +127,14 @@ function PumpCard({ onGetStart }: { onGetStart: () => void }) {
       </div>
 
       {/* Central prompt */}
-      <div className="text-center mt-6 mb-5 px-4">
+      <div className="text-center px-3" style={{ marginTop: 40, marginBottom: 34 }}>
         <p
           className="font-denton m-0"
           style={{
-            fontSize: 22,
-            fontWeight: 600,
+            fontSize: 24,
+            fontWeight: 500,
             color: '#4A0612',
-            lineHeight: 1.25,
+            lineHeight: 1.28,
             letterSpacing: '-0.2px',
           }}
         >
@@ -141,8 +144,8 @@ function PumpCard({ onGetStart }: { onGetStart: () => void }) {
         </p>
       </div>
 
-      {/* Get Start button with bunny mascot behind it */}
-      <div className="relative flex justify-center items-center">
+      {/* Get Start button with bunny mascot peeking over from behind */}
+      <div className="relative flex justify-center" style={{ minHeight: 56 }}>
         <button
           type="button"
           onClick={onGetStart}
@@ -150,26 +153,28 @@ function PumpCard({ onGetStart }: { onGetStart: () => void }) {
           style={{
             background: '#4A0612',
             borderRadius: 100,
-            padding: '14px 40px',
+            padding: '15px 44px',
             fontSize: 16,
             letterSpacing: '0.02em',
-            boxShadow: '0 6px 16px rgba(74, 6, 18, 0.25)',
+            boxShadow: '0 8px 20px rgba(74, 6, 18, 0.30)',
           }}
         >
           Get Start
         </button>
-        {/* Bunny mascot peeking from behind the right side of the button */}
+        {/* Bunny — head peeks ABOVE the button, body/hands wrap around the
+            right side. Higher z-index so ears/head are visible over the pill. */}
         <img
           src="/images/IP_%E9%AB%98%E5%85%B4.png"
           alt=""
           draggable={false}
-          className="absolute z-[1] pointer-events-none select-none"
+          className="absolute select-none pointer-events-none"
           style={{
-            right: 'calc(50% - 90px)',
-            bottom: -6,
-            width: 72,
-            height: 72,
+            left: 'calc(50% + 34px)',
+            top: -34,
+            width: 96,
+            height: 96,
             objectFit: 'contain',
+            zIndex: 1,
           }}
         />
       </div>
@@ -177,11 +182,14 @@ function PumpCard({ onGetStart }: { onGetStart: () => void }) {
   );
 }
 
-/** Stub — no real functionality yet. Visual only. */
+/**
+ * Camera device stub. Live view is a warm neutral gradient with a subtle
+ * baby-shape hint and a timestamp overlay.
+ */
 function BM04Card() {
   return (
     <div className="rounded-3xl overflow-hidden bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-      <div className="flex items-center gap-3 px-4 py-3" style={{ background: '#EFE9F6' }}>
+      <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EFE9F6' }}>
         <div className="w-8 h-8 rounded-lg bg-white/70 flex items-center justify-center flex-shrink-0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B48A5" strokeWidth="1.8">
             <rect x="3" y="6" width="14" height="12" rx="2" />
@@ -203,18 +211,31 @@ function BM04Card() {
           <path d="M9 18l6-6-6-6" />
         </svg>
       </div>
-      {/* Placeholder for camera feed — soft neutral gradient */}
       <div
         className="w-full relative"
         style={{
           aspectRatio: '16 / 10',
           background:
-            'linear-gradient(135deg, #E9DFD3 0%, #D8C5B6 50%, #B7A18E 100%)',
+            'radial-gradient(circle at 60% 55%, #F6E6D3 0%, #E7CFB9 40%, #C4A385 100%)',
         }}
       >
+        {/* Soft baby-shape hint */}
+        <div
+          className="absolute"
+          style={{
+            left: '35%',
+            top: '30%',
+            width: 90,
+            height: 90,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle at 45% 40%, rgba(255, 235, 218, 0.9) 0%, rgba(230, 210, 195, 0.35) 60%, transparent 100%)',
+            filter: 'blur(1px)',
+          }}
+        />
         <span
-          className="absolute top-2 left-3 text-white text-[11px] font-medium tabular-nums"
-          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+          className="absolute top-2.5 left-3 text-white text-[11px] font-medium tabular-nums"
+          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
         >
           2025-01-08 11:50:55
         </span>
@@ -223,13 +244,15 @@ function BM04Card() {
   );
 }
 
-/** Stub — no real functionality yet. Visual only. */
+/** Small sensor device stub — one row: icon + name + status. */
 function WN02Card() {
   return (
     <div className="flex items-center gap-3 px-4 py-3.5 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
       <div className="w-11 h-11 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.6">
-          <path d="M4 15a4 4 0 0 1 3-7.9 6 6 0 0 1 11.8 1A3.5 3.5 0 0 1 20 15H4z" />
+          {/* Square sensor with center dot — matches a smart device motif */}
+          <rect x="4" y="4" width="16" height="16" rx="4" />
+          <circle cx="12" cy="12" r="2" fill="#666" />
         </svg>
       </div>
       <div className="flex-1 min-w-0">
