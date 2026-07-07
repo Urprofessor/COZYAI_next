@@ -10,7 +10,7 @@ import type { TipImage } from '@/lib/steps/types';
  * Multi-image renders each in its own box stacked, then the body text below.
  */
 export function TipMedia({ tip }: { tip: TipImage }) {
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const images = tip.images ?? (tip.image ? [tip.image] : []);
 
   return (
@@ -24,7 +24,7 @@ export function TipMedia({ tip }: { tip: TipImage }) {
             src={src}
             alt=""
             draggable={false}
-            onClick={() => setLightbox(src)}
+            onClick={() => setLightboxIdx(i)}
             className="w-full h-auto block cursor-zoom-in select-none"
           />
         </div>
@@ -38,7 +38,13 @@ export function TipMedia({ tip }: { tip: TipImage }) {
 
       {tip.warning && <TipWarning text={tip.warning} />}
 
-      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      {lightboxIdx !== null && (
+        <Lightbox
+          images={images}
+          initialIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
     </>
   );
 }

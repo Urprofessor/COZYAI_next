@@ -16,8 +16,9 @@ import type { TipCarousel as TipCarouselType } from '@/lib/steps/types';
 export function TipCarousel({ tip }: { tip: TipCarouselType }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const heightDriven = !!tip.frameHeight;
+  const slideImages = tip.slides.map((s) => s.image);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -70,7 +71,7 @@ export function TipCarousel({ tip }: { tip: TipCarouselType }) {
                 src={slide.image}
                 alt=""
                 draggable={false}
-                onClick={() => setLightbox(slide.image)}
+                onClick={() => setLightboxIdx(i)}
                 className="block cursor-zoom-in select-none"
                 style={
                   heightDriven
@@ -103,7 +104,13 @@ export function TipCarousel({ tip }: { tip: TipCarouselType }) {
         {tip.slides[active]?.caption ?? ''}
       </p>
 
-      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      {lightboxIdx !== null && (
+        <Lightbox
+          images={slideImages}
+          initialIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
     </>
   );
 }
