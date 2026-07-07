@@ -36,11 +36,14 @@ export function StepPage({ stepNumber }: Props) {
   const [fsInitialTime, setFsInitialTime] = useState(0);
 
   function next() {
+    // Finish → back to the My Device hub.
     if (isLast) router.push('/');
     else router.push(`/setup/${step.num + 1}`);
   }
   function back() {
-    if (isFirst) router.push('/');
+    // From step 1, back goes to the Welcome intro (not the device hub) so users
+    // can revisit the phase overview.
+    if (isFirst) router.push('/welcome');
     else router.push(`/setup/${step.num - 1}`);
   }
 
