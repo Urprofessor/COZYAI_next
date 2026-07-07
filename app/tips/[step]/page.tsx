@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { StepPage } from '@/components/step/StepPage';
+import { TipStepPage } from '@/components/tips/TipStepPage';
 
 interface PageProps {
   params: Promise<{ step: string }>;
@@ -13,5 +13,5 @@ export default async function Page({ params }: PageProps) {
   const { step } = await params;
   const n = Number(step);
   if (!Number.isInteger(n) || n < 1 || n > 7) notFound();
-  return <StepPage stepNumber={n} />;
+  return <TipStepPage tipNumber={n} />;
 }

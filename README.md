@@ -20,13 +20,23 @@ vanilla `AI-Setup2.0_Deepseek` project. Same functionality, saner architecture.
   - Freeze QA AI while queued so messages become Sarah context
   - Reference footer on QA replies
   - Rotating GPT-thinking style loading text
+- **Setup flow** — `/setup/1` through `/setup/7`
+  - Shared `StepHeader` with CozyAI glass-pill entry
+  - 7-segment progress bar
+  - Video player (tap-to-toggle, progress overlay) fetching from same Cloudinary CDN
+  - "% of Moms Asked About This" badge per step
+  - Tip accordion with 3 body types (image / text / carousel)
+  - Fixed Back / Next footer
+- **Tips flow** — `/tips` + `/tips/1` through `/tips/7`
+  - Tips index: 7 topic cards + bottom-anchored floating CozyAI pill (with fade mask)
+  - Tips detail: same layout as Setup but back → /tips, no Next button
 
-**TODO (see comments in `app/setup/[step]/page.tsx` and `app/tips/page.tsx`)**
-- Setup step pages (video, progress bar, tips accordion, carousels)
-- Tips index + tipsStep pages
-- Welcome hero, Complete, Control, Settings pages
-- History pagination + "swipe up to view history" hint pill
-- Tier-3 typography usage for date dividers
+**TODO (deferred until you need them)**
+- Welcome / Complete / Control / Settings pages (marketing + device pairing UI)
+- Full-screen video player mode with scrubber and controls (vanilla project had this — kept simple here)
+- History pagination + "swipe up to view history" hint pill on CozyAI Welcome
+- Tier-3 typography usage for date dividers between old messages
+- Multi-open accordion (currently single-open) if you prefer that UX
 - Handoff card centering polish (currently uses simple flex)
 
 ## Prerequisites
@@ -120,6 +130,21 @@ components/cozy/
 ├── Lightbox.tsx            Fullscreen image viewer
 ├── LoadingIndicator.tsx    Rotating "thinking..." text
 └── HandoffCard.tsx         idle/connecting/queuing/assigning states
+
+components/step/
+├── StepHeader.tsx          Shared top bar (back + title + CozyAI pill)
+├── CozyEntryPill.tsx       Glass-effect 96×44 entry button
+├── FloatingCozyBtn.tsx     Bottom-anchored pill (Tips index)
+├── ProgressBar.tsx         7-segment clickable progress
+├── VideoPlayer.tsx         Inline video with tap-to-toggle
+├── StepPage.tsx            Setup step assembled component
+├── TipAccordion.tsx        Expandable list of tips
+├── TipCarousel.tsx         Swipe carousel for step sequences
+└── TipMedia.tsx            Image + text body renderer (used by accordion)
+
+components/tips/
+├── TipsIndex.tsx           7 topic cards + bottom floating button
+└── TipStepPage.tsx         Individual tip detail (uses step components)
 
 hooks/
 ├── useCozyChat.ts          Central chat state + streaming + handoff flow
