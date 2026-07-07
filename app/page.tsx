@@ -26,7 +26,7 @@ const PHASES = [
 ];
 
 /**
- * Root / — mirrors the vanilla #welcome page.
+ * Root / — mirrors the vanilla #welcome page exactly.
  * Pink gradient bg, Skip pill top-right, hero + 3 phase list, Get started
  * jumps into /setup/1.
  */
@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="relative flex flex-col h-full overflow-y-auto"
       style={{
         background: 'linear-gradient(180deg, #F8C3CD 0%, #FEF5F5 48%)',
       }}
@@ -45,8 +45,12 @@ export default function Home() {
       <button
         type="button"
         onClick={() => setSkipOpen(true)}
-        className="absolute right-5 z-[5] px-5 py-2 rounded-full bg-white/55 backdrop-blur-[20px] text-text-1 text-[15px] font-medium border-0"
-        style={{ top: 'calc(env(safe-area-inset-top) + 12px)' }}
+        className="absolute right-5 z-[5] bg-white/55 text-[#1A1A1A] text-[15px] font-medium border-0 rounded-[100px] px-5 py-2 cursor-pointer"
+        style={{
+          top: 'calc(env(safe-area-inset-top) + 12px)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        }}
       >
         Skip
       </button>
@@ -56,7 +60,7 @@ export default function Home() {
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)' }}
       >
         {/* Hero */}
-        <div className="text-center flex-shrink-0" style={{ marginTop: 52 }}>
+        <div className="text-center flex-shrink-0 mt-[52px]">
           <img
             src="/images/welcome-hero.png"
             alt="Welcome"
@@ -70,10 +74,27 @@ export default function Home() {
             }}
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
-          <h1 className="font-denton text-[32px] font-semibold leading-[1.12] tracking-[-0.3px] text-[#2B0007] m-0 mb-2.5">
+          <h1
+            className="font-denton m-0 mb-2.5"
+            style={{
+              fontSize: 32,
+              fontWeight: 600,
+              color: '#2B0007',
+              lineHeight: 1.12,
+              letterSpacing: '-0.3px',
+            }}
+          >
             Welcome to Air One
           </h1>
-          <p className="text-[15px] leading-[1.45] text-[#2B0007] mx-auto max-w-[300px] font-normal mt-0 mb-[26px]">
+          <p
+            className="mx-auto mt-0 mb-[26px] font-normal"
+            style={{
+              color: '#2B0007',
+              fontSize: 15,
+              lineHeight: 1.45,
+              maxWidth: 300,
+            }}
+          >
             Set up in 3 phases around 4min and pump right the first time.
           </p>
         </div>
@@ -83,9 +104,8 @@ export default function Home() {
           {PHASES.map((p, i) => (
             <div
               key={p.title}
-              className={
-                'flex gap-3 items-start ' + (i < PHASES.length - 1 ? 'pb-[22px]' : '')
-              }
+              className="flex gap-3 items-start"
+              style={{ paddingBottom: i < PHASES.length - 1 ? 22 : 0 }}
             >
               <div className="w-6 h-6 flex-shrink-0 mt-px flex items-center justify-center">
                 <img
@@ -96,13 +116,35 @@ export default function Home() {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[18px] font-semibold leading-[1.25] text-text-1 m-0 mb-0.5">
+                <h3
+                  className="m-0 mb-0.5"
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 600,
+                    color: '#1A1A1A',
+                    lineHeight: 1.25,
+                  }}
+                >
                   {p.title}
                 </h3>
-                <p className="text-[13px] leading-[1.35] text-text-1 m-0 mb-0.5">
+                <p
+                  className="m-0 mb-0.5"
+                  style={{
+                    fontSize: 13,
+                    color: '#1A1A1A',
+                    lineHeight: 1.35,
+                  }}
+                >
                   {p.desc}
                 </p>
-                <p className="text-[12px] leading-[1.3] text-neutral-500 m-0">
+                <p
+                  className="m-0"
+                  style={{
+                    fontSize: 12,
+                    color: '#888',
+                    lineHeight: 1.3,
+                  }}
+                >
                   {p.time}
                 </p>
               </div>
@@ -115,7 +157,13 @@ export default function Home() {
           <button
             type="button"
             onClick={() => router.push('/setup/1')}
-            className="w-full py-[18px] rounded-full bg-brand-rose-500 text-white font-semibold text-[17px] border-0"
+            className="w-full text-white font-semibold border-0 cursor-pointer active:opacity-80 transition-opacity"
+            style={{
+              background: '#4A0612',
+              padding: 18,
+              borderRadius: 100,
+              fontSize: 17,
+            }}
           >
             Get started
           </button>
