@@ -30,8 +30,17 @@ export function MyDevicePage() {
         <button
           type="button"
           aria-label="Add device"
-          className="w-11 h-11 rounded-full bg-white flex items-center justify-center border-0 cursor-pointer active:opacity-70"
-          style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+          className="w-11 h-11 rounded-full flex items-center justify-center border-0 cursor-pointer active:opacity-70"
+          style={{
+            // Same liquid-glass recipe as the tab bar so they read as a set.
+            background:
+              'linear-gradient(180deg, rgba(249, 247, 245, 0.68) 0%, rgba(249, 247, 245, 0.85) 100%)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '0.5px solid rgba(255, 255, 255, 0.55)',
+            boxShadow:
+              '0 4px 14px rgba(74, 6, 18, 0.08), 0 1px 2px rgba(74, 6, 18, 0.04)',
+          }}
         >
           <svg
             width="18"
@@ -51,7 +60,7 @@ export function MyDevicePage() {
           → same target as the on-image Get Start button. */}
       <div
         className="flex-1 flex flex-col gap-3.5 px-5"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 120px)' }}
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 104px)' }}
       >
         <button
           type="button"
