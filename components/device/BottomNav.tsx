@@ -1,34 +1,59 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-
 type Tab = 'home' | 'device' | 'community' | 'me';
 
 interface Props {
   active?: Tab;
 }
 
+// PNG icons from the Figma export. Only "device" has an explicit `on` variant;
+// the other tabs stay at their neutral (base) icon whether or not they're the
+// current tab, so we don't need active state art for them yet.
+const ICON: Record<Tab, string> = {
+  home: '/icon/icon_button_tab/Home01Icon.png',
+  device: '/icon/icon_button_tab/deviceonIcon.png',
+  community: '/icon/icon_button_tab/Community01Icon.png',
+  me: '/icon/icon_button_tab/Me01Icon.png',
+};
+
+const TABS: Array<{ tab: Tab; label: string }> = [
+  { tab: 'home', label: 'Home' },
+  { tab: 'device', label: 'Device' },
+  { tab: 'community', label: 'Community' },
+  { tab: 'me', label: 'Me' },
+];
+
 /**
- * Bottom tab bar. Visual only — Home / Community / Me stubs don't navigate
- * because their pages don't exist yet.
+ * Bottom tab bar — iOS 26+ liquid-glass style. Full viewport width, floating
+ * above content with a heavy backdrop-blur so what's behind still bleeds
+ * through subtly. Tokens from the Figma inspect:
+ *   • 94.5px hug height
+ *   • padding 16/25/25/25
+ *   • background lgrad #F9F7F5 @ ~72% alpha
+ *
+ * Home / Community / Me are stubs — clicking them does nothing yet.
  */
 export function BottomNav({ active = 'device' }: Props) {
-  const tabs: Array<{ tab: Tab; label: string }> = [
-    { tab: 'home', label: 'Home' },
-    { tab: 'device', label: 'Device' },
-    { tab: 'community', label: 'Community' },
-    { tab: 'me', label: 'Me' },
-  ];
   return (
     <div
-      className="fixed left-0 right-0 bottom-0 z-[20] bg-white flex items-center justify-around"
+      className="fixed left-0 right-0 bottom-0 z-[20] flex items-start justify-around"
       style={{
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        paddingTop: 6,
-        borderTop: '0.5px solid #EEE',
+        // Figma hug height is 94.5; use min-height so devices with a safe-area
+        // inset (iPhone home indicator) can grow the bar instead of squeezing content.
+        minHeight: 94.5,
+        paddingTop: 16,
+        paddingLeft: 25,
+        paddingRight: 25,
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)',
+        background:
+          'linear-gradient(180deg, rgba(249, 247, 245, 0.72) 0%, rgba(249, 247, 245, 0.90) 100%)',
+        backdropFilter: 'blur(40px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+        borderTop: '0.5px solid rgba(255, 255, 255, 0.55)',
+        boxShadow: '0 -1px 0 rgba(0, 0, 0, 0.04)',
       }}
     >
-      {tabs.map(({ tab, label }) => (
+      {TABS.map(({ tab, label }) => (
         <NavItem key={tab} tab={tab} label={label} active={active} />
       ))}
     </div>
@@ -40,85 +65,25 @@ function NavItem({ tab, label, active }: { tab: Tab; label: string; active: Tab 
   return (
     <button
       type="button"
-      className="flex flex-col items-center border-0 bg-transparent cursor-pointer py-1 px-4"
+      className="flex flex-col items-center gap-1 border-0 bg-transparent cursor-pointer px-3 active:opacity-70 transition-opacity"
     >
-      <div
-        className="flex items-center justify-center transition-colors"
-        style={
-          isActive
-            ? {
-                width: 50,
-                height: 30,
-                borderRadius: 999,
-                background: '#F3E1E4',
-              }
-            : undefined
-        }
-      >
-        <Icon tab={tab} active={isActive} />
-      </div>
+      <img
+        src={ICON[tab]}
+        alt=""
+        draggable={false}
+        className="select-none"
+        style={{ width: 26, height: 26, objectFit: 'contain' }}
+      />
       <span
-        className={cn('font-medium', isActive && 'font-semibold')}
+        className="font-medium"
         style={{
           fontSize: 11,
           color: isActive ? '#4A0612' : '#8A8A8A',
-          marginTop: 3,
+          letterSpacing: 0,
         }}
       >
         {label}
       </span>
     </button>
-  );
-}
-
-function Icon({ tab, active }: { tab: Tab; active: boolean }) {
-  const color = active ? '#4A0612' : '#8A8A8A';
-  const size = 20;
-
-  if (tab === 'home') {
-    return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 11l9-8 9 8" />
-        <path d="M5 10v10h4v-6h6v6h4V10" />
-      </svg>
-    );
-  }
-  if (tab === 'device') {
-    // Filled hexagon with a stylized "Y" inside. Matches the highlighted Y-in-
-    // hexagon tab motif from the design.
-    return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 2.4l8.3 4.8v9.6L12 21.6 3.7 16.8V7.2L12 2.4z"
-          fill={color}
-          stroke={color}
-          strokeWidth="0.5"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M8.5 8.2l3.5 3.6 3.5-3.6M12 11.8v4"
-          stroke="#FFFFFF"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-      </svg>
-    );
-  }
-  if (tab === 'community') {
-    // Planet with orbit ring
-    return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6">
-        <circle cx="12" cy="12" r="5" />
-        <ellipse cx="12" cy="12" rx="10.5" ry="4" transform="rotate(-25 12 12)" />
-      </svg>
-    );
-  }
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7" />
-    </svg>
   );
 }
