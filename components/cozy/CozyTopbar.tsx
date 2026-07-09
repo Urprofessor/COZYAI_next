@@ -34,7 +34,10 @@ export function CozyTopbar({ backHref = '/', onBackClick }: Props) {
         </Link>
       )}
 
-      <div className="flex items-center gap-1.5">
+      {/* The wrapper only takes the width of the "CozyAI Device" span; the
+          Beta pill is absolutely positioned off the right edge so it doesn't
+          pull the title off-center. */}
+      <div className="relative">
         <span className="text-[16px] font-bold text-brand-rose-500">
           CozyAI Device
         </span>
@@ -42,7 +45,7 @@ export function CozyTopbar({ backHref = '/', onBackClick }: Props) {
           src="/icon/Beta.png"
           alt="Beta"
           draggable={false}
-          className="h-[20px] w-auto object-contain select-none"
+          className="absolute left-full top-1/2 -translate-y-1/2 h-[20px] w-auto object-contain select-none ml-1.5 pointer-events-none"
         />
       </div>
     </div>
