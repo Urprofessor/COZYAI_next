@@ -156,6 +156,7 @@ export function StepPage({ stepNumber }: Props) {
       <StepFooter
         showBack={!isFirst}
         nextLabel={isLast ? 'Finish' : 'Next'}
+        backLabel="Back"
         onBack={back}
         onNext={next}
       />
@@ -186,11 +187,13 @@ export function StepPage({ stepNumber }: Props) {
 
 function StepFooter({
   showBack,
+  backLabel,
   nextLabel,
   onBack,
   onNext,
 }: {
   showBack: boolean;
+  backLabel: string;
   nextLabel: string;
   onBack: () => void;
   onNext: () => void;
@@ -221,7 +224,7 @@ function StepFooter({
             minWidth: 110,
           }}
         >
-          Back
+          {backLabel}
         </button>
       )}
       <button

@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { useCozyChat } from '@/hooks/useCozyChat';
 import { SARAH_INTRO } from '@/lib/cozy/constants';
 import { Bubble } from './Bubble';
+import { CozyTopbar } from './CozyTopbar';
 import { HandoffCard } from './HandoffCard';
 import { InputBar } from './InputBar';
 import { Lightbox } from './Lightbox';
@@ -47,19 +47,7 @@ export function CozyChat({ initialQuestion }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Topbar */}
-      <div className="relative z-[1] flex items-center justify-center h-14 px-2 flex-shrink-0">
-        <Link
-          href="/cozy/welcome"
-          aria-label="Back"
-          className="absolute left-3 w-9 h-9 rounded-full border-0 bg-white/70 flex items-center justify-center cursor-pointer"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A0612" strokeWidth="2.2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </Link>
-        <span className="text-[15px] font-semibold text-brand-rose-500 opacity-80">CozyAI</span>
-      </div>
+      <CozyTopbar backHref="/cozy/welcome" />
 
       {/* Messages */}
       <div

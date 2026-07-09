@@ -125,7 +125,7 @@ export function InputBar({
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={onKey}
-            placeholder="Ask anything"
+            placeholder="Ask about your Momcozy Air 1"
             className={cn(
               'flex-1 min-w-0 border-0 outline-none bg-transparent text-base leading-[22px] resize-none block',
               'min-h-[22px] max-h-[110px] pr-[38px] placeholder:text-neutral-400'

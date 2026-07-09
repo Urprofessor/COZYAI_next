@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CozyTopbar } from './CozyTopbar';
 
 const PILLS = [
   'How do I know the flange fits?',
@@ -11,15 +10,7 @@ const PILLS = [
 ];
 
 export function CozyWelcome() {
-  const [greeting, setGreeting] = useState('Good day');
-  const [name, setName] = useState('Clara');
   const router = useRouter();
-
-  useEffect(() => {
-    const h = new Date().getHours();
-    setGreeting(h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening');
-    setName(localStorage.getItem('cozyUserName') || 'Clara');
-  }, []);
 
   function sendPill(text: string) {
     // Simplest handoff to the Chat page: seed via querystring.
@@ -40,19 +31,7 @@ export function CozyWelcome() {
         }}
       />
 
-      {/* Topbar */}
-      <div className="relative z-[1] flex items-center justify-center h-14 px-2 flex-shrink-0">
-        <Link
-          href="/"
-          aria-label="Back"
-          className="absolute left-3 w-9 h-9 rounded-full border-0 bg-white/70 flex items-center justify-center cursor-pointer"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A0612" strokeWidth="2.2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </Link>
-        <span className="text-[15px] font-semibold text-brand-rose-500 opacity-80">CozyAI</span>
-      </div>
+      <CozyTopbar backHref="/" />
 
       {/* Body */}
       <div className="relative z-[1] flex-1 flex flex-col items-center px-6 pt-2 overflow-y-auto">
@@ -63,10 +42,8 @@ export function CozyWelcome() {
           className="block h-auto w-[66vw] mx-auto mt-1.5 mb-4"
         />
         <p className="w-full max-w-[361px] font-denton text-[28px] leading-[140%] text-text-1 text-center m-0">
-          {greeting}, <span className="text-brand-rose-700">{name}</span>
-        </p>
-        <p className="w-full max-w-[361px] font-denton text-[28px] leading-[140%] text-text-1 text-center m-0">
-          How can I help?
+          How can I help with your{' '}
+          <span className="text-brand-rose-700">Momcozy Air 1</span> ?
         </p>
 
         <div className="w-full flex flex-col items-start gap-2.5 mt-auto pb-4">
@@ -83,7 +60,7 @@ export function CozyWelcome() {
         </div>
       </div>
 
-      {/* Ask anything input just routes to chat */}
+      {/* Fake input tap-target that jumps into Chat */}
       <div className="relative z-[6] px-4 flex-shrink-0">
         <button
           type="button"
@@ -93,7 +70,9 @@ export function CozyWelcome() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" className="w-5 h-5 text-neutral-900">
             <path d="M12 5v14M5 12h14" />
           </svg>
-          <span className="text-base text-neutral-400">Ask anything</span>
+          <span className="text-base text-neutral-400">
+            Ask about your Momcozy Air 1
+          </span>
         </button>
       </div>
 

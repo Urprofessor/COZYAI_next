@@ -148,8 +148,6 @@ export function WelcomePage() {
         onClose={() => setSkipOpen(false)}
         onConfirm={() => {
           setSkipOpen(false);
-          // Skip drops you at the My Device hub, mirroring the vanilla
-          // Skip → #control behavior.
           router.push('/');
         }}
       />
