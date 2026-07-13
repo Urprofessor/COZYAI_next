@@ -92,74 +92,76 @@ export function StepPage({ stepNumber }: Props) {
         <ProgressBar currentStep={step.num} />
       </div>
 
+      {/* Scroll host — footer lives inside so it pins to the viewport bottom
+          when content is short (mt-auto inside min-h-full) and flows below the
+          content once an accordion section expands past the viewport. */}
       <div className="flex-1 overflow-y-auto">
-        {/* Full-bleed video */}
-        <div style={{ margin: '0 0 16px' }}>
-          <VideoPlayer
-            ref={videoRef}
-            src={getStepVideoSrc(step.num)}
-            labelTitle="How-to video"
-            onExpand={openFullscreen}
+        <div className="flex flex-col min-h-full">
+          {/* Full-bleed video */}
+          <div style={{ margin: '0 0 16px' }}>
+            <VideoPlayer
+              ref={videoRef}
+              src={getStepVideoSrc(step.num)}
+              labelTitle="How-to video"
+              onExpand={openFullscreen}
+            />
+          </div>
+
+          {/* Floating card with pink ribbon badge */}
+          <div className="relative" style={{ margin: '0 16px 16px' }}>
+            {/* moms-agree-badge — the pink ribbon shape uses rectangleBg.png */}
+            <div
+              className="absolute inline-flex items-center justify-center gap-[5px] text-white whitespace-nowrap"
+              style={{
+                top: -8,
+                right: -6,
+                width: 290,
+                height: 44,
+                backgroundImage: "url('/images/rectangleBg.png')",
+                backgroundSize: '100% 100%',
+                backgroundRepeat: 'no-repeat',
+                fontSize: 12.5,
+                fontWeight: 700,
+                letterSpacing: '0.01em',
+                paddingLeft: 30,
+                zIndex: 3,
+                filter:
+                  'drop-shadow(0 4px 6px rgba(160, 30, 50, 0.25)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))',
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="#fff"
+                aria-hidden
+                style={{ width: 14, height: 14, flexShrink: 0 }}
+              >
+                <path d="M12 2 C12.6 7.4 16.6 11.4 22 12 C16.6 12.6 12.6 16.6 12 22 C11.4 16.6 7.4 12.6 2 12 C7.4 11.4 11.4 7.4 12 2 Z" />
+              </svg>
+              <span>{MOMS_AGREE_PCT[idx] ?? 65}% of Moms Asked About This</span>
+            </div>
+
+            {/* Step card wrapping the accordion */}
+            <div
+              className="bg-white"
+              style={{
+                borderRadius: 20,
+                padding: '24px 22px',
+                boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
+              }}
+            >
+              <TipAccordion tips={step.tips} />
+            </div>
+          </div>
+
+          <StepFooter
+            showBack={!isFirst}
+            nextLabel={isLast ? 'Finish' : 'Next'}
+            backLabel="Back"
+            onBack={back}
+            onNext={next}
           />
         </div>
-
-        {/* Floating card with pink ribbon badge */}
-        <div className="relative" style={{ margin: '0 16px 16px' }}>
-          {/* moms-agree-badge — the pink ribbon shape uses rectangleBg.png */}
-          <div
-            className="absolute inline-flex items-center justify-center gap-[5px] text-white whitespace-nowrap"
-            style={{
-              top: -8,
-              right: -6,
-              width: 290,
-              height: 44,
-              backgroundImage: "url('/images/rectangleBg.png')",
-              backgroundSize: '100% 100%',
-              backgroundRepeat: 'no-repeat',
-              fontSize: 12.5,
-              fontWeight: 700,
-              letterSpacing: '0.01em',
-              paddingLeft: 30,
-              zIndex: 3,
-              filter:
-                'drop-shadow(0 4px 6px rgba(160, 30, 50, 0.25)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))',
-            }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="#fff"
-              aria-hidden
-              style={{ width: 14, height: 14, flexShrink: 0 }}
-            >
-              <path d="M12 2 C12.6 7.4 16.6 11.4 22 12 C16.6 12.6 12.6 16.6 12 22 C11.4 16.6 7.4 12.6 2 12 C7.4 11.4 11.4 7.4 12 2 Z" />
-            </svg>
-            <span>{MOMS_AGREE_PCT[idx] ?? 65}% of Moms Asked About This</span>
-          </div>
-
-          {/* Step card wrapping the accordion */}
-          <div
-            className="bg-white"
-            style={{
-              borderRadius: 20,
-              padding: '24px 22px',
-              boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
-            }}
-          >
-            <TipAccordion tips={step.tips} />
-          </div>
-        </div>
-
-        {/* Bottom breathing room so footer doesn't clip content */}
-        <div style={{ height: 100 }} />
       </div>
-
-      <StepFooter
-        showBack={!isFirst}
-        nextLabel={isLast ? 'Finish' : 'Next'}
-        backLabel="Back"
-        onBack={back}
-        onNext={next}
-      />
 
       {fsOpen && (
         <FullscreenVideoPlayer
